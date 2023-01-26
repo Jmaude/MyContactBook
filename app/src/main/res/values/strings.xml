@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">MyContactBook</string>
+    <string name="button_to_display_list_of_contacts">Button to display list of contacts</string>
+    <string name="button_to_display_contacts_on_map">Button to display contacts on map</string>
+    <string name="todo">TODO</string>
+    <string name="save">Save</string>
+    <string name="togglebutton">ToggleButton</string>
+</resources>
