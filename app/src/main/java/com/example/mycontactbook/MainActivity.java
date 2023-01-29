@@ -16,6 +16,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -34,7 +35,13 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         initToggleButton();
         setForEditing(false);
         initChangeDateButton();
+        initTextChangedEvents();
+        initSaveButton();
+
+
         currentContact = new Contact();
+
+
     }
 
     private void initListButton() {
@@ -106,6 +113,10 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
         if (enabled) {
             editName.requestFocus();
+        }
+        else{
+            ScrollView s = findViewById(R.id.scrollView2);
+            s.fullScroll(ScrollView.FOCUS_UP);
         }
 
 
@@ -292,6 +303,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         saveButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick (View view){
+                hideKeyboard();
                 boolean wasSuccessful;
                 ContactDataSource ds = new ContactDataSource(MainActivity.this);
                 try{
@@ -299,6 +311,8 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
                     if(currentContact.getContactId() == -1){
                         wasSuccessful = ds.insertContact(currentContact);
+                        int newId = ds.getLastContactID();
+                        currentContact.setContactId(newId);
                     }
                     else {
                         wasSuccessful = ds.updateContact(currentContact);

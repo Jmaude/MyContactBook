@@ -2,6 +2,7 @@ package com.example.mycontactbook;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -68,5 +69,29 @@ public class ContactDataSource {
             //Do nothing - will return false if there is an exception
         }
         return didSucceed;
+    }
+
+    //get new ID and set the currentContact ContactID attribute to val
+    public int getLastContactID(){
+        int lastId;
+        try{
+            String query = "Select MAX(_id) from contact";
+            /*SQL query written to get max val for _id field in contact table -
+            _id - auto increment
+            * */
+            Cursor cursor = database.rawQuery(query, null);
+            //cursor is declared and assigned to hold results of exception of query
+            //cursor- obj used to hold and move results of query
+
+            cursor.moveToFirst();
+            //move to first record in data
+            lastId = cursor.getInt(0);
+            //max id retreived from record set- fields in record set indexed at 0
+            cursor.close();
+        }
+        catch (Exception e){
+            lastId = -1;
+        }
+        return lastId;
     }
 }
