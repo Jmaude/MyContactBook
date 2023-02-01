@@ -19,8 +19,10 @@ public class ContactActivitySettings extends AppCompatActivity {
         initListButton();
         initMapButton();
         initSettingsButton();
+        initSettings();
         initSortByClick();
         initSortOrderClick();
+
     }
     private void initListButton() {
         ImageButton ibList = findViewById(R.id.imageButtonList);
@@ -74,6 +76,7 @@ public class ContactActivitySettings extends AppCompatActivity {
 
         RadioButton rbAscending = findViewById(R.id.radioAscending);
         RadioButton rbDescending = findViewById(R.id.radioDescending);
+
         if (sortOrder.equalsIgnoreCase("ASC")){
             rbAscending.setChecked(true);
         }
@@ -81,7 +84,7 @@ public class ContactActivitySettings extends AppCompatActivity {
             rbDescending.setChecked(true);
         }
     }
-
+//Store the selected user preferences (one for each radio group)
     private void initSortByClick() {
         RadioGroup rgSortBy = findViewById(R.id.radioGroupSortBy);
         rgSortBy.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {

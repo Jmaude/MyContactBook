@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         initTextChangedEvents();
         initSaveButton();
 
-
         currentContact = new Contact();
 
 
@@ -194,13 +193,13 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
             @Override
             public void afterTextChanged(Editable s) {
-                currentContact.setStreetAddress(etCity.getText().toString());
+                currentContact.setCity(etCity.getText().toString());
 
             }
         });
 
-        final EditText etState = findViewById(R.id.editZipcode);
-        etCity.addTextChangedListener(new TextWatcher() {
+        final EditText etState = findViewById(R.id.editState);
+        etState.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -213,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
             @Override
             public void afterTextChanged(Editable s) {
-                currentContact.setStreetAddress(etState.getText().toString());
+                currentContact.setState(etState.getText().toString());
 
             }
         });
@@ -232,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
             @Override
             public void afterTextChanged(Editable s) {
-                currentContact.setStreetAddress(etZipcode.getText().toString());
+                currentContact.setZipCode(etZipcode.getText().toString());
 
             }
         });
@@ -251,7 +250,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
             @Override
             public void afterTextChanged(Editable s) {
-                currentContact.setStreetAddress(etPhoneNumber.getText().toString());
+                currentContact.setPhoneNumber(etPhoneNumber.getText().toString());
 
             }
         });
@@ -270,7 +269,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
             @Override
             public void afterTextChanged(Editable s) {
-                currentContact.setStreetAddress(etCellNumber.getText().toString());
+                currentContact.setCellNumber(etCellNumber.getText().toString());
 
             }
         });
@@ -289,7 +288,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
             @Override
             public void afterTextChanged(Editable s) {
-                currentContact.setStreetAddress(etEmail.getText().toString());
+                currentContact.setEMail(etEmail.getText().toString());
 
             }
         });
@@ -311,10 +310,13 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
                     if(currentContact.getContactId() == -1){
                         wasSuccessful = ds.insertContact(currentContact);
-                        int newId = ds.getLastContactID();
-                        currentContact.setContactId(newId);
-                    }
-                    else {
+
+                        if(wasSuccessful){
+                            int newId = ds.getLastContactID();
+                            currentContact.setContactId(newId);
+                        }
+
+                    } else {
                         wasSuccessful = ds.updateContact(currentContact);
                     }
                     ds.close();

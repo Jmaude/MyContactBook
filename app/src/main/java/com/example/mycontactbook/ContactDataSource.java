@@ -18,18 +18,15 @@ public class ContactDataSource {
 
 
     public void open() throws SQLException {
-        database = dbHelper.getReadableDatabase();
-    }
-
-    public void close() {
-        dbHelper.close();
+        database = dbHelper.getWritableDatabase();
     }
 
     public boolean insertContact(Contact c){
         boolean didSucceed = false;
         try {
+            database = dbHelper.getWritableDatabase();
             ContentValues initialValues = new ContentValues();
-
+            //Values retrieved from contact obj and inserted into ContentValues obj
             initialValues.put("contactname", c.getContactName());
             initialValues.put("streetaddress", c.getStreetAddress());
             initialValues.put("city", c.getCity());
@@ -86,12 +83,15 @@ public class ContactDataSource {
             cursor.moveToFirst();
             //move to first record in data
             lastId = cursor.getInt(0);
-            //max id retreived from record set- fields in record set indexed at 0
+            //max id retrieved from record set- fields in record set indexed at 0
             cursor.close();
         }
         catch (Exception e){
             lastId = -1;
         }
         return lastId;
+    }
+    public void close() {
+        dbHelper.close();
     }
 }

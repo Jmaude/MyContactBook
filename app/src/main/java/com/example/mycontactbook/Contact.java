@@ -21,26 +21,26 @@ public class Contact {
         return contactID;
     }
     public void setContactId(int i){
-        contactID = i;
+        this.contactID = i;
     }
     public String getContactName(){
         return contactName;
     }
     public void setContactName(String s){
-        contactName = s;
+        this.contactName = s;
     }
     public Calendar getBirthday(){
         return birthday;
     }
     public void setBirthday(Calendar c){
-        birthday = c;
+        this.birthday = c;
     }
     public String getStreetAddress() {
         return streetAddress;
     }
 
     public void setStreetAddress(String streetAddress) {
-        streetAddress = streetAddress;
+        this.streetAddress = streetAddress;
     }
 
     public String getCity() {
@@ -48,7 +48,7 @@ public class Contact {
     }
 
     public void setCity(String city) {
-        city = city;
+        this.city = city;
     }
 
     public String getState() {
@@ -56,7 +56,7 @@ public class Contact {
     }
 
     public void setState(String state) {
-        state = state;
+        this.state = state;
     }
 
     public String getZipCode() {
@@ -64,7 +64,7 @@ public class Contact {
     }
 
     public void setZipCode(String zipCode) {
-        zipCode = zipCode;
+        this.zipCode = zipCode;
     }
 
     public String getPhoneNumber() {
@@ -72,7 +72,7 @@ public class Contact {
     }
 
     public void setPhoneNumber(String phoneNumber) {
-        phoneNumber = phoneNumber;
+        this.phoneNumber = phoneNumber;
     }
 
     public String getCellNumber() {
@@ -80,7 +80,7 @@ public class Contact {
     }
 
     public void setCellNumber(String cellNumber) {
-        cellNumber = cellNumber;
+        this.cellNumber = cellNumber;
     }
 
     public String getEMail() {
@@ -88,7 +88,7 @@ public class Contact {
     }
 
     public void setEMail(String eMail) {
-       EMail = eMail;
+       this.EMail = eMail;
     }
 
 }
