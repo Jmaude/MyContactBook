@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.ArrayList;
+
 public class ContactDataSource {
 
     private SQLiteDatabase database;
@@ -68,6 +70,29 @@ public class ContactDataSource {
         return didSucceed;
     }
 
+    public ArrayList<String> getContactName(){
+        ArrayList<String> contactNames = new ArrayList<>();
+        try{
+            String query = "Select contactname from contact";
+            //SQL query is written to return contactname field for all records in the contact table
+            Cursor cursor = database.rawQuery(query,null);
+            //obj holds results of query
+
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                contactNames.add(cursor.getString(0));
+                cursor.moveToNext();
+            }
+            //loop to traverse contacts - initialized by moving to the first record
+            //contact name added to ArrayList
+            cursor.close();
+        }
+        catch (Exception e){
+            contactNames = new ArrayList<String>();
+        }
+        return contactNames;
+    }
+
     //get new ID and set the currentContact ContactID attribute to val
     public int getLastContactID(){
         int lastId;
@@ -94,4 +119,6 @@ public class ContactDataSource {
     public void close() {
         dbHelper.close();
     }
+
+
 }
