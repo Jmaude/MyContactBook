@@ -3,6 +3,7 @@ package com.example.mycontactbook;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 
 public class ContactAdapter extends RecyclerView.Adapter {
     private ArrayList<String> contactData;
+    private View.OnClickListener OnItemClickListener;
 
     public class ContactViewHolder extends RecyclerView.ViewHolder {
         //declares and codes behavior of the ViewHolder class that is owned by the adapter
@@ -21,6 +23,8 @@ public class ContactAdapter extends RecyclerView.Adapter {
         public ContactViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewContact = itemView.findViewById(R.id.textViewName);
+                itemView.setTag(this);
+                itemView.setOnClickListener(OnItemClickListener);
         }
 
         public TextView getContactTextView(){
@@ -30,6 +34,10 @@ public class ContactAdapter extends RecyclerView.Adapter {
     //constructor for the adapter - used to associate data to be displayed w/ adapter
     public ContactAdapter(ArrayList<String> arrayList){
         contactData = arrayList;
+    }
+
+    public void setOnItemClickListener(View.OnClickListener itemClickListener){
+        OnItemClickListener = itemClickListener;
     }
 
     @NonNull
