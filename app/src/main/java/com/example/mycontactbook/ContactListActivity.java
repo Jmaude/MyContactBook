@@ -3,7 +3,6 @@ package com.example.mycontactbook;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -14,19 +13,18 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 public class ContactListActivity extends AppCompatActivity {
-    //RecyclerView contactList;
- //   RecyclerView contact = findViewById(R.id.rvContact);
-  //  ContactAdapter contactAdapter;
+    RecyclerView contactList;
+    ContactAdapter contactAdapter;
+    ArrayList<Contact> contacts; //holds contacts
 
     private View.OnClickListener onItemClickListener = new View.OnClickListener() {
         @Override
         public void onClick (View view){
-
             RecyclerView.ViewHolder viewHolder = (RecyclerView.ViewHolder) view.getTag();
-            //int contactId = contacts.get(position).getContactID;
             int position = viewHolder.getAdapterPosition();
+            int contactId = contacts.get(position).getContactId();
             Intent intent = new Intent (ContactListActivity.this, MainActivity.class);
-            //intent.putExtra("contactId", contactId);
+            intent.putExtra("contactId", contactId);
             startActivity(intent);
         }
     };
@@ -47,12 +45,13 @@ public class ContactListActivity extends AppCompatActivity {
 
         try {
             ds.open();
+            contacts = ds.getContacts();
             names = ds.getContactName();
             ds.close();
             RecyclerView contactList = findViewById(R.id.rvContact);
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
             contactList.setLayoutManager(layoutManager);
-            ContactAdapter contactAdapter = new ContactAdapter(names);
+            ContactAdapter contactAdapter = new ContactAdapter(contacts);
             contactList.setAdapter(contactAdapter);
         } catch (Exception e) {
             Toast.makeText(this, "Error retrieving contacts", Toast.LENGTH_LONG).show();
