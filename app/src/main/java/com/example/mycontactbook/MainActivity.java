@@ -2,9 +2,7 @@ package com.example.mycontactbook;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
-
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.PhoneNumberFormattingTextWatcher;
@@ -12,7 +10,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -20,7 +17,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity implements DatePickerDialog.SaveDateListener {
@@ -35,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         initSettingsButton();
         Bundle extras = getIntent().getExtras();
         if(extras !=null) {
-            initContact(extras.getInt("contactId"));
+            initContact(extras.getInt("contactID"));
         }
         else{
             currentContact = new Contact();
@@ -117,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         saveButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick (View view){
-                hideKeyboard();
+
                 boolean wasSuccessful;
                 ContactDataSource ds = new ContactDataSource(MainActivity.this);
                 try{
@@ -339,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
 
 
-
+/*
     private void hideKeyboard(){
 
         InputMethodManager imm = (InputMethodManager)
@@ -363,7 +359,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         imm.hideSoftInputFromWindow(editMail.getWindowToken(),0);
 
     }
-
+*/
     private void initContact(int id) {
 
         ContactDataSource ds = new ContactDataSource(MainActivity.this);

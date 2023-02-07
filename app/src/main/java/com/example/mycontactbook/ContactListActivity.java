@@ -25,7 +25,7 @@ public class ContactListActivity extends AppCompatActivity {
             int position = viewHolder.getAdapterPosition();
             int contactId = contacts.get(position).getContactId();
             Intent intent = new Intent (ContactListActivity.this, MainActivity.class);
-            intent.putExtra("contactId", contactId);
+            intent.putExtra("contactID", contactId);
             startActivity(intent);
         }
     };

@@ -26,11 +26,15 @@ public class ContactAdapter extends RecyclerView.Adapter {
 
         public ContactViewHolder(@NonNull View itemView) {
             super(itemView);
-            textViewContact = itemView.findViewById(R.id.textViewName);
+            textViewContact = itemView.findViewById(R.id.textContactName);
             textPhone = itemView.findViewById(R.id.textPhoneNumber);
             deleteButton = itemView.findViewById(R.id.buttonDeleteContact);
             itemView.setTag(this);
             itemView.setOnClickListener(mOnItemClickListener);
+        }
+
+        public TextView getContactTextView(){
+            return textViewContact;
         }
 
         //used by the adapter to return the textView to set and change displayed text
@@ -42,9 +46,6 @@ public class ContactAdapter extends RecyclerView.Adapter {
             return deleteButton;
         }
 
-        public TextView getContactTextView(){
-            return textViewContact;
-        }
     }
     //constructor for the adapter - used to associate data to be displayed w/ adapter
     public ContactAdapter(ArrayList<Contact> arrayList){
@@ -52,6 +53,7 @@ public class ContactAdapter extends RecyclerView.Adapter {
     }
 
     public void setOnItemClickListener(View.OnClickListener itemClickListener){
+        //activity to the adapter
         mOnItemClickListener = itemClickListener;
     }
 
@@ -59,8 +61,7 @@ public class ContactAdapter extends RecyclerView.Adapter {
     @Override //required method- overrides superclass method - method called for each item
     //in the data to be displayed
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item,
-                parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
         return new ContactViewHolder(v);
     }
 
