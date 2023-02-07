@@ -33,19 +33,21 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         initListButton();
         initMapButton();
         initSettingsButton();
+        Bundle extras = getIntent().getExtras();
+        if(extras !=null) {
+            initContact(extras.getInt("contactId"));
+        }
+        else{
+            currentContact = new Contact();
+        }
+
         initToggleButton();
         setForEditing(false);
         initChangeDateButton();
         initTextChangedEvents();
         initSaveButton();
 
-       Bundle extras = getIntent().getExtras();
-       if(extras !=null) {
-           initContact(extras.getInt("contactid"));
-       }
-       else{
-           currentContact = new Contact();
-       }
+
 
 
     }
@@ -84,7 +86,9 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     }
 
     private void initToggleButton() {
+
         final ToggleButton editToggle = (ToggleButton) findViewById(R.id.toggleButtonEdit);
+
         editToggle.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -92,48 +96,6 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
                 setForEditing(editToggle.isChecked());
             }
         });
-    }
-
-    private void setForEditing(boolean enabled) {
-        EditText editName = findViewById(R.id.editName);
-        EditText editAddress = findViewById(R.id.editAddress);
-        EditText editCity = findViewById(R.id.editCity);
-        EditText editState = findViewById(R.id.editState);
-        EditText editZipCode = findViewById(R.id.editZipcode);
-        EditText editPhone = findViewById(R.id.editHome);
-        EditText editCell = findViewById(R.id.editCell);
-        EditText editEmail = findViewById(R.id.editEmail);
-        Button buttonChange = findViewById(R.id.buttonChange);
-        Button buttonSave = findViewById(R.id.buttonSave);
-
-        editName.setEnabled(enabled);
-        editAddress.setEnabled(enabled);
-        editCity.setEnabled(enabled);
-        editState.setEnabled(enabled);
-        editZipCode.setEnabled(enabled);
-        editPhone.setEnabled(enabled);
-        editCell.setEnabled(enabled);
-        editEmail.setEnabled(enabled);
-        buttonChange.setEnabled(enabled);
-        buttonSave.setEnabled(enabled);
-
-        if (enabled) {
-            editName.requestFocus();
-        }
-        else{
-            ScrollView s = findViewById(R.id.scrollView2);
-            s.fullScroll(ScrollView.FOCUS_UP);
-        }
-
-
-    }
-
-    @Override
-    public void didFinishDatePickerDialog(Calendar selectedTime) {
-        TextView birthDay = findViewById(R.id.textBirthday);
-        birthDay.setText(DateFormat.format("MM/dd/yyyy", selectedTime));
-        currentContact.setBirthday(selectedTime);
-        //uses Contact class to assign date selected in dialog to currentContact obj
     }
 
     private void initChangeDateButton(){
@@ -145,6 +107,44 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
                 FragmentManager fm = getSupportFragmentManager();
                 DatePickerDialog datePickerDialog = new DatePickerDialog();
                 datePickerDialog.show(fm, "DatePick");
+            }
+        });
+    }
+
+    private void initSaveButton(){
+        Button saveButton = findViewById(R.id.buttonSave);
+
+        saveButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick (View view){
+                hideKeyboard();
+                boolean wasSuccessful;
+                ContactDataSource ds = new ContactDataSource(MainActivity.this);
+                try{
+                    ds.open();
+
+                    if(currentContact.getContactId() == -1){
+                        wasSuccessful = ds.insertContact(currentContact);
+
+                        if(wasSuccessful){
+                            int newId = ds.getLastContactID();
+                            currentContact.setContactId(newId);
+                        }
+
+                    } else {
+                        wasSuccessful = ds.updateContact(currentContact);
+                    }
+                    ds.close();
+                }
+                catch (Exception e){
+                    wasSuccessful = false;
+                }
+
+                if (wasSuccessful){
+                    ToggleButton editToggle = findViewById(R.id.toggleButtonEdit);
+                    editToggle.toggle();
+                    setForEditing(false);
+                }
             }
         });
     }
@@ -304,42 +304,41 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         etCellNumber.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
     }
 
-    private void initSaveButton(){
-        Button saveButton = findViewById(R.id.buttonSave);
-        saveButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick (View view){
-                hideKeyboard();
-                boolean wasSuccessful;
-                ContactDataSource ds = new ContactDataSource(MainActivity.this);
-                try{
-                    ds.open();
 
-                    if(currentContact.getContactId() == -1){
-                        wasSuccessful = ds.insertContact(currentContact);
+    private void setForEditing(boolean enabled) {
+        EditText editName = findViewById(R.id.editName);
+        EditText editAddress = findViewById(R.id.editAddress);
+        EditText editCity = findViewById(R.id.editCity);
+        EditText editState = findViewById(R.id.editState);
+        EditText editZipCode = findViewById(R.id.editZipcode);
+        EditText editPhone = findViewById(R.id.editHome);
+        EditText editCell = findViewById(R.id.editCell);
+        EditText editEmail = findViewById(R.id.editEmail);
+        Button buttonChange = findViewById(R.id.buttonChange);
+        Button buttonSave = findViewById(R.id.buttonSave);
 
-                        if(wasSuccessful){
-                            int newId = ds.getLastContactID();
-                            currentContact.setContactId(newId);
-                        }
+        editName.setEnabled(enabled);
+        editAddress.setEnabled(enabled);
+        editCity.setEnabled(enabled);
+        editState.setEnabled(enabled);
+        editZipCode.setEnabled(enabled);
+        editPhone.setEnabled(enabled);
+        editCell.setEnabled(enabled);
+        editEmail.setEnabled(enabled);
+        buttonChange.setEnabled(enabled);
+        buttonSave.setEnabled(enabled);
 
-                    } else {
-                        wasSuccessful = ds.updateContact(currentContact);
-                    }
-                    ds.close();
-                }
-                catch (Exception e){
-                    wasSuccessful = false;
-                }
-
-                if (wasSuccessful){
-                    ToggleButton editToggle = findViewById(R.id.toggleButtonEdit);
-                    editToggle.toggle();
-                    setForEditing(false);
-                }
-            }
-        });
+        if (enabled) {
+            editName.requestFocus();
+        }
+        else{
+            ScrollView s = findViewById(R.id.scrollView2);
+            s.fullScroll(ScrollView.FOCUS_UP);
+        }
     }
+
+
+
 
     private void hideKeyboard(){
 
@@ -397,6 +396,14 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         editEmail.setText(currentContact.getEMail());
         birthDay.setText(DateFormat.format("MM/dd/yyyy",
                 currentContact.getBirthday().getTimeInMillis()).toString());
+    }
+
+    @Override
+    public void didFinishDatePickerDialog(Calendar selectedTime) {
+        TextView birthDay = findViewById(R.id.textBirthday);
+        birthDay.setText(DateFormat.format("MM/dd/yyyy", selectedTime));
+        currentContact.setBirthday(selectedTime);
+        //uses Contact class to assign date selected in dialog to currentContact obj
     }
 
 }

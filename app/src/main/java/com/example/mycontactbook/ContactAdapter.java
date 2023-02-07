@@ -1,5 +1,6 @@
 package com.example.mycontactbook;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 
 public class ContactAdapter extends RecyclerView.Adapter {
     private ArrayList<Contact> contactData;
-    private View.OnClickListener OnItemClickListener;
+    private View.OnClickListener mOnItemClickListener;
 
     public class ContactViewHolder extends RecyclerView.ViewHolder {
         //declares and codes behavior of the ViewHolder class that is owned by the adapter
@@ -25,11 +26,11 @@ public class ContactAdapter extends RecyclerView.Adapter {
 
         public ContactViewHolder(@NonNull View itemView) {
             super(itemView);
-            textViewContact = itemView.findViewById(R.id.textContactName);
+            textViewContact = itemView.findViewById(R.id.textViewName);
             textPhone = itemView.findViewById(R.id.textPhoneNumber);
             deleteButton = itemView.findViewById(R.id.buttonDeleteContact);
             itemView.setTag(this);
-            itemView.setOnClickListener(OnItemClickListener);
+            itemView.setOnClickListener(mOnItemClickListener);
         }
 
         //used by the adapter to return the textView to set and change displayed text
@@ -51,7 +52,7 @@ public class ContactAdapter extends RecyclerView.Adapter {
     }
 
     public void setOnItemClickListener(View.OnClickListener itemClickListener){
-        OnItemClickListener = itemClickListener;
+        mOnItemClickListener = itemClickListener;
     }
 
     @NonNull
@@ -65,7 +66,9 @@ public class ContactAdapter extends RecyclerView.Adapter {
 
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position){
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder,
+                                 int position){
+
         ContactViewHolder cvh = (ContactViewHolder) holder;
         cvh.getContactTextView().setText(contactData.get(position).getContactName());
         cvh.getPhoneTextView().setText(contactData.get(position).getPhoneNumber());

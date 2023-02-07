@@ -14,8 +14,9 @@ import java.util.ArrayList;
 
 public class ContactListActivity extends AppCompatActivity {
     RecyclerView contactList;
-    ContactAdapter contactAdapter;
     ArrayList<Contact> contacts; //holds contacts
+    ContactAdapter contactAdapter;
+
 
     private View.OnClickListener onItemClickListener = new View.OnClickListener() {
         @Override
@@ -35,23 +36,28 @@ public class ContactListActivity extends AppCompatActivity {
         initListButton();
         initMapButton();
         initSettingsButton();
-        //onItemClickListener(ContactAdapter.class);
-        //onItemClickListener();
+
 
 
 
         ContactDataSource ds = new ContactDataSource(this);
-        ArrayList<String> names;
+       ArrayList<Contact> contacts;
 
         try {
             ds.open();
             contacts = ds.getContacts();
-            names = ds.getContactName();
             ds.close();
-            RecyclerView contactList = findViewById(R.id.rvContact);
+
+            contactList = findViewById(R.id.rvContact);
+
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+
             contactList.setLayoutManager(layoutManager);
+
             ContactAdapter contactAdapter = new ContactAdapter(contacts);
+
+            contactAdapter.setOnItemClickListener(onItemClickListener);
+
             contactList.setAdapter(contactAdapter);
         } catch (Exception e) {
             Toast.makeText(this, "Error retrieving contacts", Toast.LENGTH_LONG).show();
