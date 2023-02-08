@@ -62,17 +62,23 @@ public class ContactListActivity extends AppCompatActivity {
             contacts = ds.getContacts(sortBy, sortOrder);
             ds.close();
 
-            contactList = findViewById(R.id.rvContact);
+            if(contacts.size() > 0) {
+                //diplay contacts
+                contactList = findViewById(R.id.rvContact);
 
-            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
 
-            contactList.setLayoutManager(layoutManager);
+                contactList.setLayoutManager(layoutManager);
 
-            ContactAdapter contactAdapter = new ContactAdapter(contacts, this);
+                contactAdapter = new ContactAdapter(contacts, this);
 
-            contactAdapter.setOnItemClickListener(onItemClickListener);
+                contactAdapter.setOnItemClickListener(onItemClickListener);
 
-            contactList.setAdapter(contactAdapter);
+                contactList.setAdapter(contactAdapter);
+            }else {
+                Intent intent = new Intent (ContactListActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
         } catch (Exception e) {
             Toast.makeText(this, "Error retrieving contacts", Toast.LENGTH_LONG).show();
         }
@@ -105,6 +111,7 @@ public class ContactListActivity extends AppCompatActivity {
 
     private void initListButton() {
         ImageButton ibList = findViewById(R.id.imageButtonList);
+        ibList.setEnabled(false);
 
     }
 
