@@ -5,7 +5,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,12 +26,14 @@ public class ContactAdapter extends RecyclerView.Adapter {
 
         public TextView textViewContact;
         public TextView textPhone;
+        public TextView textAddress;
         public Button deleteButton;
 
         public ContactViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewContact = itemView.findViewById(R.id.textContactName);
             textPhone = itemView.findViewById(R.id.textPhoneNumber);
+            textAddress = itemView.findViewById(R.id.textShowAddress);
             deleteButton = itemView.findViewById(R.id.buttonDeleteContact);
             //set tag to identify what was clicked
             itemView.setTag(this);
@@ -48,6 +49,8 @@ public class ContactAdapter extends RecyclerView.Adapter {
         public TextView getPhoneTextView() {
             return textPhone;
         }
+
+        public TextView getTextAddress(){return textAddress;}
 
         public Button getDeleteButton() {
             return deleteButton;
@@ -82,6 +85,8 @@ public class ContactAdapter extends RecyclerView.Adapter {
         ContactViewHolder cvh = (ContactViewHolder) holder;
         cvh.getContactTextView().setText(contactData.get(position).getContactName());
         cvh.getPhoneTextView().setText(contactData.get(position).getPhoneNumber());
+        cvh.getTextAddress().setText((contactData.get(position).getStreetAddress()) + ", " +
+                (contactData.get(position).getCity()) + " , " +(contactData.get(position).getState()));
         if (isDeleting) {
             cvh.getDeleteButton().setVisibility(View.VISIBLE);
             cvh.getDeleteButton().setOnClickListener(new View.OnClickListener() {
