@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         initListButton();
         initMapButton();
         initSettingsButton();
+
         Bundle extras = getIntent().getExtras();
         if(extras !=null) {
             initContact(extras.getInt("contactID"));
@@ -37,14 +38,11 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
             currentContact = new Contact();
         }
 
-        initToggleButton();
         setForEditing(false);
+        initToggleButton();
         initChangeDateButton();
         initTextChangedEvents();
         initSaveButton();
-
-
-
 
     }
 
@@ -119,12 +117,12 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
                 try{
                     ds.open();
 
-                    if(currentContact.getContactId() == -1){
+                    if(currentContact.getContactID() == -1){
                         wasSuccessful = ds.insertContact(currentContact);
 
                         if(wasSuccessful){
                             int newId = ds.getLastContactID();
-                            currentContact.setContactId(newId);
+                            currentContact.setContactID(newId);
                         }
 
                     } else {

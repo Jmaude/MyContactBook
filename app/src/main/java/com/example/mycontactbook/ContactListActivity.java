@@ -3,10 +3,15 @@ package com.example.mycontactbook;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.Switch;
 import android.widget.Toast;
 
 
@@ -20,15 +25,16 @@ public class ContactListActivity extends AppCompatActivity {
 
     private View.OnClickListener onItemClickListener = new View.OnClickListener() {
         @Override
-        public void onClick (View view){
+        public void onClick(View view) {
             RecyclerView.ViewHolder viewHolder = (RecyclerView.ViewHolder) view.getTag();
             int position = viewHolder.getAdapterPosition();
-            int contactId = contacts.get(position).getContactId();
-            Intent intent = new Intent (ContactListActivity.this, MainActivity.class);
+            int contactId = contacts.get(position).getContactID();
+            Intent intent = new Intent(ContactListActivity.this, MainActivity.class);
             intent.putExtra("contactID", contactId);
             startActivity(intent);
         }
     };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,16 +42,24 @@ public class ContactListActivity extends AppCompatActivity {
         initListButton();
         initMapButton();
         initSettingsButton();
+        initAddContactButton();
+        initDeleteSwitch();
+    }
 
-
-
-
+    @Override
+    public void onResume(){
+        //retrieve stored user preferences
+        super.onResume();
+        String sortBy = getSharedPreferences("MyContactListPreferences",
+                Context.MODE_PRIVATE).getString("sortfield", "contactname");
+        String sortOrder = getSharedPreferences("MyContactListPreferences",
+                Context.MODE_PRIVATE).getString("sortorder", "ASC");
         ContactDataSource ds = new ContactDataSource(this);
-       ArrayList<Contact> contacts;
+
 
         try {
             ds.open();
-            contacts = ds.getContacts();
+            contacts = ds.getContacts(sortBy, sortOrder);
             ds.close();
 
             contactList = findViewById(R.id.rvContact);
@@ -54,7 +68,7 @@ public class ContactListActivity extends AppCompatActivity {
 
             contactList.setLayoutManager(layoutManager);
 
-            ContactAdapter contactAdapter = new ContactAdapter(contacts);
+            ContactAdapter contactAdapter = new ContactAdapter(contacts, this);
 
             contactAdapter.setOnItemClickListener(onItemClickListener);
 
@@ -62,6 +76,31 @@ public class ContactListActivity extends AppCompatActivity {
         } catch (Exception e) {
             Toast.makeText(this, "Error retrieving contacts", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void initAddContactButton(){
+        Button newContact = findViewById(R.id.buttonAddContact);
+        newContact.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ContactListActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void initDeleteSwitch () {
+        Switch s = findViewById(R.id.switchDelete);
+        s.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                Boolean status = compoundButton.isChecked();
+                contactAdapter.setDelete(status);
+                contactAdapter.notifyDataSetChanged();
+                // redraws the list
+            }
+        });
     }
 
     private void initListButton() {

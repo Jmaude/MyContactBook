@@ -17,10 +17,10 @@ public class Contact {
         contactID = -1;
         birthday = Calendar.getInstance();
     }
-    public int getContactId(){
+    public int getContactID(){
         return contactID;
     }
-    public void setContactId(int i){
+    public void setContactID(int i){
         this.contactID = i;
     }
     public String getContactName(){

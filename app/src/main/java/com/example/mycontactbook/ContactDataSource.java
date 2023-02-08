@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -26,6 +25,7 @@ public class ContactDataSource {
         database = dbHelper.getWritableDatabase();
     }
 
+    //the database insets the ID bc the _id field was declared as an autoincrement field
     public boolean insertContact(Contact c){
         boolean didSucceed = false;
         try {
@@ -52,7 +52,7 @@ public class ContactDataSource {
     public boolean updateContact(Contact c ) {
         boolean didSucceed = false;
         try {
-            Long rowId = (long) c.getContactId();
+            Long rowId = (long) c.getContactID();
             ContentValues updateValues = new ContentValues();
 
             updateValues.put("contactname", c.getContactName());
@@ -71,29 +71,6 @@ public class ContactDataSource {
             //Do nothing - will return false if there is an exception
         }
         return didSucceed;
-    }
-
-    public ArrayList<String> getContactName(){
-        ArrayList<String> contactNames = new ArrayList<>();
-        try{
-            String query = "Select contactname from contact";
-            //SQL query is written to return contactname field for all records in the contact table
-            Cursor cursor = database.rawQuery(query,null);
-            //obj holds results of query
-
-            cursor.moveToFirst();
-            while(!cursor.isAfterLast()){
-                contactNames.add(cursor.getString(0));
-                cursor.moveToNext();
-            }
-            //loop to traverse contacts - initialized by moving to the first record
-            //contact name added to ArrayList
-            cursor.close();
-        }
-        catch (Exception e){
-            contactNames = new ArrayList<String>();
-        }
-        return contactNames;
     }
 
     //get new ID and set the currentContact ContactID attribute to val
@@ -119,22 +96,47 @@ public class ContactDataSource {
         }
         return lastId;
     }
+
+    public ArrayList<String> getContactName(){
+        ArrayList<String> contactNames = new ArrayList<>();
+        try{
+            String query = "Select contactname from contact";
+            //SQL query is written to return contactname field for all records in the contact table
+            Cursor cursor = database.rawQuery(query,null);
+            //obj holds results of query
+
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                contactNames.add(cursor.getString(0));
+                cursor.moveToNext();
+            }
+            //loop to traverse contacts - initialized by moving to the first record
+            //contact name added to ArrayList
+            cursor.close();
+        }
+        catch (Exception e){
+            contactNames = new ArrayList<>();
+        }
+        return contactNames;
+    }
+
+
     public void close() {
         dbHelper.close();
     }
 
 
-    public ArrayList<Contact> getContacts(){
-        ArrayList<Contact> contacts = new ArrayList<Contact>();
+    public ArrayList<Contact> getContacts(String sortField, String sortOrder){
+        ArrayList<Contact> contacts = new ArrayList<>();
         try{
-            String query = "SELECT * FROM contact";
+            String query = "SELECT * FROM contact ORDER BY " + sortField + " " + sortOrder;
             Cursor cursor = database.rawQuery(query,null);
 
             Contact newContact;
             cursor.moveToFirst();
             while (!cursor.isAfterLast()){
                 newContact = new Contact(); // new contact obj instantiated for each record in the cursor
-                newContact.setContactId(cursor.getInt(0));
+                newContact.setContactID(cursor.getInt(0));
                 newContact.setContactName(cursor.getString(1));
                 newContact.setStreetAddress(cursor.getString(2));
                 newContact.setCity(cursor.getString(3));
@@ -163,7 +165,7 @@ public class ContactDataSource {
         Cursor cursor = database.rawQuery(query, null);
 
         if(cursor.moveToFirst()) {
-            contact.setContactId(cursor.getInt(0));
+            contact.setContactID(cursor.getInt(0));
             contact.setContactName(cursor.getString(1));
             contact.setStreetAddress(cursor.getString(2));
             contact.setCity(cursor.getString(3));
@@ -180,6 +182,16 @@ public class ContactDataSource {
         }
         return contact;
     }
+    //Delete contact from database
+    public boolean deleteContact (int contactId) {
+        boolean didDelete = false;
+        try {
+            didDelete = database.delete("contact", "_id=" + contactId,
+                    null) > 0;
+        } catch (Exception e) {
+            // Do nothing -return value already set to false
+        }
 
-
+        return didDelete;
+    }
 }
