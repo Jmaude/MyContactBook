@@ -2,14 +2,15 @@ package com.example.mycontactbook;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class ContactAdapter extends RecyclerView.Adapter {
         public TextView textPhone;
         public TextView textAddress;
         public Button deleteButton;
+        public ConstraintLayout Clayout;
 
         public ContactViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -66,6 +68,7 @@ public class ContactAdapter extends RecyclerView.Adapter {
     public void setOnItemClickListener(View.OnClickListener itemClickListener){
         //activity to the adapter
         mOnItemClickListener = itemClickListener;
+
     }
 
     @NonNull
@@ -74,19 +77,28 @@ public class ContactAdapter extends RecyclerView.Adapter {
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
         return new ContactViewHolder(v);
+
     }
 
     //Called by recycler view to display the data at pos s
     //tells adapter to update data on each of our rows based on RV pos
+    @SuppressLint("ResourceAsColor")
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, @SuppressLint("RecyclerView") final int position){
         //final added to allow OnClick to access its value
         //change value holder
         ContactViewHolder cvh = (ContactViewHolder) holder;
+
+        if (position % 2 == 1) {
+            ((ContactViewHolder) holder).textViewContact.setTextColor(Color.BLUE);
+        } else {
+            ((ContactViewHolder) holder).textViewContact.setTextColor(Color.RED);
+        }
         cvh.getContactTextView().setText(contactData.get(position).getContactName());
         cvh.getPhoneTextView().setText(contactData.get(position).getPhoneNumber());
         cvh.getTextAddress().setText((contactData.get(position).getStreetAddress()) + ", " +
                 (contactData.get(position).getCity()) + " , " +(contactData.get(position).getState()));
+
         if (isDeleting) {
             cvh.getDeleteButton().setVisibility(View.VISIBLE);
             cvh.getDeleteButton().setOnClickListener(new View.OnClickListener() {
@@ -131,6 +143,19 @@ public class ContactAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemCount() {return contactData.size();
     }
+
+   /* @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View view = super.getView(position, convertView, parent);
+        if (position % 2 == 1) {
+            view.txtViewTitle.setTextColor()(Color.BLUE);
+        } else {
+            view.txtViewTitle.setTextColor()(Color.CYAN);
+        }
+
+        return view;
+    }*/
+
 
 }
 

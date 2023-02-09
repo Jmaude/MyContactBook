@@ -13,5 +13,7 @@
     <color name="system_red">#ff0000</color>
     <color name="system_transparent">#00000000 </color>
     <color name="system_blue">#0000ff </color>
+    <color name="Red">#F44336</color>
+    <color name="Blue">#3F51B5</color>
 
 </resources>
