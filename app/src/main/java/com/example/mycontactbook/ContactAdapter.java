@@ -29,7 +29,6 @@ public class ContactAdapter extends RecyclerView.Adapter {
         public TextView textPhone;
         public TextView textAddress;
         public Button deleteButton;
-        public ConstraintLayout Clayout;
 
         public ContactViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -80,7 +79,7 @@ public class ContactAdapter extends RecyclerView.Adapter {
 
     }
 
-    //Called by recycler view to display the data at pos s
+    //Called by recycler view to display the data at poss
     //tells adapter to update data on each of our rows based on RV pos
     @SuppressLint("ResourceAsColor")
     @Override
