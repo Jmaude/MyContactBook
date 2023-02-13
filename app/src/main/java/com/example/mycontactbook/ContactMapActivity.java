@@ -2,6 +2,7 @@ package com.example.mycontactbook;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
@@ -13,6 +14,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,42 +30,14 @@ public class ContactMapActivity extends AppCompatActivity {
     LocationManager locationManager;
     LocationListener gpsListener;
 
+    final int PERMISSION_REQUEST_LOCATION = 101;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_map);
-        //initGetLocation();
+        initGetLocationButton();
     }
-
-   /* private void initGetLocation(){
-        Button locationButton = (Button) findViewById(R.id.buttonGetLocation);
-        locationButton.setOnClickListener(new View.OnClickListener(){
-
-            @Override
-            public void onClick(View v) {
-                /*EditText editAddress = (EditText) findViewById(R.id.editAddress);
-                EditText editCity = (EditText) findViewById(R.id.editCity);
-                EditText editState = (EditText) findViewById(R.id.editState);
-                EditText editZipcode = (EditText) findViewById(R.id.editZipcode);
-
-                String address = editAddress.getText().toString() + ", " +
-                        editCity.getText().toString() + ", " +
-                        editState.getText().toString() + ", " +
-                        editZipcode.getText().toString();
-                //proper format for a call to the geocoding service - street address with elements of the
-                //address seperated by commas
-
-                List<Address> addresses = null;
-                Geocoder geo = new Geocoder(ContactMapActivity.this);
-
-                //geo obj has all the info required to contact host service
-                //addresses = geo.getFromLocationName(address, 1);
-                //1- response
-
-            }
-
-    }*/
-
 
     @Override
     public void onPause() {
@@ -75,13 +49,62 @@ public class ContactMapActivity extends AppCompatActivity {
         }
     }
 
-    private void StartLocationUpdates(){
-        if( Build.VERSION.SDK_INT>= 23 && ContextCompat.checkSelfPermission(getBaseContext(),
-                android.Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission( getBaseContext(),
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION) !=
-    PackageManager.PERMISSION_GRANTED){
+    private void initGetLocationButton () {
+        Button locationButton = (Button) findViewById(R.id.buttonGetLocation);
+        locationButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+
+                try {
+                    if (Build.VERSION.SDK_INT >= 23) {
+                        if (ContextCompat.checkSelfPermission(ContactMapActivity.this,
+                                Manifest.permission.ACCESS_FINE_LOCATION) !=
+                                PackageManager.PERMISSION_GRANTED) {
+                            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                                    ContactMapActivity.this,
+                                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                                Snackbar.make(findViewById(R.id.activity_contact_map),
+                                                "MyContactList requires this permission to locate " +
+                                                        "your contacts", Snackbar.LENGTH_INDEFINITE)
+                                        .setAction("OK", new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                ActivityCompat.requestPermissions(
+                                                        ContactMapActivity.this,
+                                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                                        PERMISSION_REQUEST_LOCATION);
+                                            }
+                                        })
+                                        .show();
+                            } else {
+                                ActivityCompat.requestPermissions(ContactMapActivity.this,
+                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                        PERMISSION_REQUEST_LOCATION);
+                            }
+                        } else {
+                            startLocationUpdates();
+                        }
+                    } else {
+                        startLocationUpdates();
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(getBaseContext(), "Error requesting prmission",
+                            Toast.LENGTH_LONG).show();
+                }
+
+            }
+        });
+    }
+    private void startLocationUpdates() {
+        if (Build.VERSION.SDK_INT >= 23 &&
+                ContextCompat.checkSelfPermission(getBaseContext(),
+                        Manifest.permission.ACCESS_FINE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(getBaseContext(),
+                        Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED) {
             return;
         }
         try {
@@ -102,14 +125,9 @@ public class ContactMapActivity extends AppCompatActivity {
                     //when a location is detected it is reported to this method as a location obj
                 }
 
-                public void onStatusChanged(String provider, int status, Bundle extras) {
-                }
-
-                public void onProviderEnabled(String provider) {
-                }
-
-                public void onProviderDisabled(String provider) {
-                }
+                public void onStatusChanged(String provider, int status, Bundle extras) {}
+                public void onProviderEnabled(String provider) {}
+                public void onProviderDisabled(String provider) {}
                 //required by by location listener + onLocationChanged
             };
             locationManager.requestLocationUpdates(
