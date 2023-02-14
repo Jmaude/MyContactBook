@@ -30,6 +30,7 @@ public class ContactMapActivity extends AppCompatActivity {
     LocationManager locationManager;
     LocationListener gpsListener;
     LocationListener networkListener;
+    Location currentBestLocation;
 
     final int PERMISSION_REQUEST_LOCATION = 101;
 
@@ -188,5 +189,19 @@ public class ContactMapActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    private boolean isBetterLocation(Location location){
+        boolean isBetter = false;
+        if (currentBestLocation == null){
+            isBetter = true;
+        }
+        else if (location.getAccuracy() <= currentBestLocation.getAccuracy()){
+            isBetter = true;
+        }
+        else if (location.getTime() - currentBestLocation.getTime() > 5*60*1000){
+            isBetter = true;
+        }
+        return isBetter;
     }
 }
