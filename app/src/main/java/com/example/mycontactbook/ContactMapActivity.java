@@ -133,7 +133,7 @@ public class ContactMapActivity extends AppCompatActivity {
                 public void onProviderEnabled(String provider) {}
                 public void onProviderDisabled(String provider) {}
                 //required by by location listener + onLocationChanged
-            };gpsListener = new LocationListener() {
+            };networkListener = new LocationListener() {
                 /*getSystemService method is sent to the activity's context with a parameter that tells the
                 context that you want the location service manager.
                 getBaseContext is used to get the root context- this case activity
