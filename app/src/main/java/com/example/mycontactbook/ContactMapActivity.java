@@ -29,6 +29,7 @@ public class ContactMapActivity extends AppCompatActivity {
 
     LocationManager locationManager;
     LocationListener gpsListener;
+    LocationListener networkListener;
 
     final int PERMISSION_REQUEST_LOCATION = 101;
 
@@ -42,6 +43,16 @@ public class ContactMapActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
+
+        if (Build.VERSION.SDK_INT >= 23 &&
+                ContextCompat.checkSelfPermission(getBaseContext(),
+                        Manifest.permission.ACCESS_FINE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(getBaseContext(),
+                        Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
         try {
             locationManager.removeUpdates(gpsListener);
         } catch (Exception e) {
@@ -98,15 +109,7 @@ public class ContactMapActivity extends AppCompatActivity {
         });
     }
     private void startLocationUpdates() {
-        if (Build.VERSION.SDK_INT >= 23 &&
-                ContextCompat.checkSelfPermission(getBaseContext(),
-                        Manifest.permission.ACCESS_FINE_LOCATION) !=
-                        PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(getBaseContext(),
-                        Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                        PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
+
         try {
             locationManager = (LocationManager) getBaseContext().getSystemService(Context.LOCATION_SERVICE);
             gpsListener = new LocationListener() {
@@ -129,15 +132,61 @@ public class ContactMapActivity extends AppCompatActivity {
                 public void onProviderEnabled(String provider) {}
                 public void onProviderDisabled(String provider) {}
                 //required by by location listener + onLocationChanged
+            };gpsListener = new LocationListener() {
+                /*getSystemService method is sent to the activity's context with a parameter that tells the
+                context that you want the location service manager.
+                getBaseContext is used to get the root context- this case activity
+                 */
+                @Override
+                public void onLocationChanged(@NonNull Location location) {
+                    TextView txtLatitude = (TextView) findViewById(R.id.textLattitude);
+                    TextView txtLongitude = (TextView) findViewById(R.id.textLongitude);
+                    TextView txtAccuracy = (TextView) findViewById(R.id.textAccuracy);
+                    txtLongitude.setText(String.valueOf(location.getLatitude()));
+                    txtLatitude.setText(String.valueOf(location.getLongitude()));
+                    txtAccuracy.setText(String.valueOf(location.getAccuracy()));
+                    //when a location is detected it is reported to this method as a location obj
+                }
+
+                public void onStatusChanged(String provider, int status, Bundle extras) {}
+                public void onProviderEnabled(String provider) {}
+                public void onProviderDisabled(String provider) {}
+                //required by by location listener + onLocationChanged
             };
+
             locationManager.requestLocationUpdates(
                     LocationManager.GPS_PROVIDER, 0, 0, gpsListener);
+                   /*LM is sent message requestLocationUpdates to begin listening for location changes
+                   with non min time between updates and changes
+                    */
+            locationManager.requestLocationUpdates(
+                    LocationManager.NETWORK_PROVIDER, 0, 0, gpsListener);
                    /*LM is sent message requestLocationUpdates to begin listening for location changes
                    with non min time between updates and changes
                     */
         } catch (Exception e) {
             Toast.makeText(getBaseContext(), "Error, Location not available",
                     Toast.LENGTH_LONG).show();
+        }
+    }
+    @Override
+    //request response sends request code - determines which permission request
+    public void onRequestPermissionsResult (int requestCode,
+                                            String permissions[], int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case PERMISSION_REQUEST_LOCATION: {
+                //only one permission - so only one case
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    startLocationUpdates();
+                } else {
+                    Toast.makeText(ContactMapActivity.this,
+                            "MyContactList will not locate your contacts.",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
         }
     }
 }
