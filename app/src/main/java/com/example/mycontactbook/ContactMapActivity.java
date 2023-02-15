@@ -71,6 +71,22 @@ public class ContactMapActivity extends AppCompatActivity implements
         initMapButton();
         initSettingsButton();
 
+        Bundle extras = getIntent().getExtras();
+        try{
+            ContactDataSource ds = new ContactDataSource(ContactMapActivity.this);
+            ds.open();
+            if(extras != null){
+                currentContact = ds.getSpecificContact(extras.getInt("contactId"));
+            }
+            else{
+                contacts = ds.getContacts("contactName", "ASC");
+            }
+            ds.close();
+        }
+        catch(Exception e) {
+            Toast.makeText(this, "Contact(s) could not be retrieved.", Toast.LENGTH_LONG).show();
+        }
+
 
     }
     @Override
