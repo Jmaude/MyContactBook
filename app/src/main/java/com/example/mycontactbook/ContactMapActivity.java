@@ -36,6 +36,8 @@ import android.widget.Toast;
 import com.google.android.gms.maps.SupportMapFragment;
 
 import java.io.IOException;
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ContactMapActivity extends AppCompatActivity implements
@@ -47,6 +49,8 @@ public class ContactMapActivity extends AppCompatActivity implements
     FusedLocationProviderClient fusedLocationProviderClient;
     LocationRequest locationRequest;
     LocationCallback locationCallback;
+    ArrayList<Contact> contacts = new ArrayList<>();
+    Contact currentContact = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
