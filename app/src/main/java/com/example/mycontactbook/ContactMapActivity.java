@@ -37,6 +37,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.location.*;
 import android.widget.Toast;
@@ -78,6 +80,7 @@ public class ContactMapActivity extends AppCompatActivity implements
         initListButton();
         initMapButton();
         initSettingsButton();
+        initMapTypeButtons();
 
         Bundle extras = getIntent().getExtras();
         try{
@@ -175,6 +178,10 @@ public class ContactMapActivity extends AppCompatActivity implements
     public void onMapReady(GoogleMap googleMap){
         gMap= googleMap;
         gMap.setMapType(GoogleMap.MAP_TYPE_NORMAL); //options- MAP_TYPE_SATELLITE, MAP_TYPE_TERRAIN
+
+        //makes sure that the Normal Radiobutton is checked when displayed
+        RadioButton rbNormal = findViewById(R.id.radioButtonNormal);
+        rbNormal.setChecked(true);
 
         // put markers on the map
         Point size = new Point();
@@ -349,4 +356,23 @@ public class ContactMapActivity extends AppCompatActivity implements
         });
     }
 
+    private void initMapTypeButtons(){
+        RadioGroup rgMapType = findViewById(R.id.radioGroupMapType);
+        rgMapType.setOnCheckedChangeListener (new RadioGroup.OnCheckedChangeListener(){
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton rbNormal = findViewById(R.id.radioButtonNormal);
+                if(rbNormal.isChecked()){
+                    gMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                }
+                else{
+                    gMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                }
+            }
+        });
+    }
+
 }
+
+
+
