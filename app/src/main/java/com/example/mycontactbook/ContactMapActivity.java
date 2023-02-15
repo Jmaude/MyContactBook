@@ -1,14 +1,17 @@
 package com.example.mycontactbook;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.LocationListener;
@@ -21,11 +24,16 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.snackbar.Snackbar;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -162,11 +170,93 @@ public class ContactMapActivity extends AppCompatActivity implements
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
 
-    //recieves google map obj and assigns it to gMap var - map type set
+    //receives google map obj and assigns it to gMap var - map type set
     @Override
     public void onMapReady(GoogleMap googleMap){
         gMap= googleMap;
         gMap.setMapType(GoogleMap.MAP_TYPE_NORMAL); //options- MAP_TYPE_SATELLITE, MAP_TYPE_TERRAIN
+
+        // put markers on the map
+        Point size = new Point();
+        WindowManager w = getWindowManager();
+        w.getDefaultDisplay().getSize(size);
+        int measuredWidth = size.x;
+        int measuredHeight = size.y;
+        // to properly bound a group of points - app needs to know size of display
+
+        if (contacts.size() > 0){
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            //used to construct geographic boundaries of a set of GPS coordinates
+            for (int i = 0; i < contacts.size();i++){
+                //adds contacts to map
+                currentContact = contacts.get(i);
+                Geocoder geo = new Geocoder(this);
+                List<Address> addresses = null;
+
+                String address = currentContact.getStreetAddress() + ", "+
+                        currentContact.getCity() + ", "+
+                        currentContact.getState() + ", " +
+                        currentContact.getZipCode();
+
+                try{
+                    addresses = geo.getFromLocationName(address, 1);
+                }
+                catch (IOException e){
+                    e.printStackTrace();
+                }
+                //LatLng obj instantiated - is point on map - is included in bounds
+                LatLng point = new LatLng(addresses.get(0).getLatitude(),
+                        addresses.get(0).getLongitude());
+                builder.include(point);
+
+                //marker is added to the app
+                //add marker is a MarkerObject obj- set LatLng obj ad the position on the map for the marker
+                gMap.addMarker(new MarkerOptions().position(point)
+                        .title(currentContact.getContactName()).snippet(address));
+            }
+            //zoom into markers
+            gMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(),
+                    measuredWidth, measuredHeight,450)); // if padding too small - markers close to edge
+        }
+        else{
+            if(currentContact !=null){
+                Geocoder geo = new Geocoder(this);
+                List<Address> addresses = null;
+
+                String address = currentContact.getStreetAddress() + ", "+
+                        currentContact.getCity() + ", "+
+                        currentContact.getState() + ", " +
+                        currentContact.getZipCode();
+
+                try{
+                    addresses = geo.getFromLocationName(address, 1);
+                }
+                catch (IOException e){
+                    e.printStackTrace();
+                }
+                LatLng point = new LatLng(
+                        addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
+
+                gMap.addMarker(new MarkerOptions().position(point).title(
+                        currentContact.getContactName()).snippet(address));
+                //zoom for single address
+                gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(point,16));
+            }
+
+            else{
+                AlertDialog alertDialog = new AlertDialog.Builder
+                        (ContactMapActivity.this).create();
+                alertDialog.setTitle("No Data");
+                alertDialog.setMessage("No data is available for the mapping function.");
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
+                        "OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }});
+                        alertDialog.show();
+            }
+        }
         try {
             if (Build.VERSION.SDK_INT >= 23) {
                 if (ContextCompat.checkSelfPermission(ContactMapActivity.this,
