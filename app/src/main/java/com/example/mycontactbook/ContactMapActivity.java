@@ -67,6 +67,7 @@ public class ContactMapActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_map);
 
+        //system services available for CMA
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         SupportMapFragment mapFragment = (SupportMapFragment)
@@ -298,7 +299,7 @@ public class ContactMapActivity extends AppCompatActivity implements
                 startLocationUpdates();
             }
         } catch (Exception e) {
-            Toast.makeText(getBaseContext(), "Error requesting prmission",
+            Toast.makeText(getBaseContext(), "Error requesting permission",
                     Toast.LENGTH_LONG).show();
         }
     }
