@@ -48,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         initListButton();
         initMapButton();
         initSettingsButton();
+        initCallFunction();
+        initImageButton();
 
         Bundle extras = getIntent().getExtras();
         if(extras !=null) {
@@ -428,6 +430,14 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         editEmail.setText(currentContact.getEMail());
         birthDay.setText(DateFormat.format("MM/dd/yyyy",
                 currentContact.getBirthday().getTimeInMillis()).toString());
+
+        ImageButton picture = (ImageButton) findViewById(R.id.imageContact);
+        if(currentContact.getPicture() != null){
+            picture.setImageBitmap(currentContact.getPicture());
+        }
+        else{
+            picture.setImageResource(R.drawable.cphoto);
+        }
     }
 
     private void initCallFunction() {
