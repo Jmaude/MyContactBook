@@ -12,9 +12,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.text.Editable;
 import android.text.InputType;
@@ -36,6 +38,8 @@ import java.util.Calendar;
 public class MainActivity extends AppCompatActivity implements DatePickerDialog.SaveDateListener {
     private Contact currentContact;
     final int PERMISSION_REQUEST_PHONE = 102;
+    final int PERMISSION_REQUEST_CAMERA = 103;
+    final int CAMERA_REQUEST = 1888;
     //Provide association between MA class and Contact object
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -332,17 +336,17 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         EditText editEmail = findViewById(R.id.editEmail);
         Button buttonChange = findViewById(R.id.buttonChange);
         Button buttonSave = findViewById(R.id.buttonSave);
+        ImageButton picture = findViewById(R.id.imageContact);
 
         editName.setEnabled(enabled);
         editAddress.setEnabled(enabled);
         editCity.setEnabled(enabled);
         editState.setEnabled(enabled);
         editZipCode.setEnabled(enabled);
-        //editPhone.setEnabled(enabled);
-        // editCell.setEnabled(enabled);
         editEmail.setEnabled(enabled);
         buttonChange.setEnabled(enabled);
         buttonSave.setEnabled(enabled);
+        picture.setEnabled(enabled);
 
         if (enabled) {
             editName.requestFocus();
@@ -357,33 +361,41 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         }
     }
 
+    private void initImageButton() {
+        ImageButton ib = findViewById(R.id.imageContact);
+        ib.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= 23) {
+                    if (ContextCompat.checkSelfPermission(MainActivity.this,
+                            Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                        if(ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.CAMERA)) {
+                            Snackbar.make(findViewById(R.id.activity_main), "The app needs permission to take pictures", Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("OK", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CAMERA);
+                                        }
+                                    })
+                                    .show();
+                        } else {
+                            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA},
+                                    PERMISSION_REQUEST_CAMERA);
 
-
-/*
-    private void hideKeyboard(){
-
-        InputMethodManager imm = (InputMethodManager)
-                                    getSystemService(Context.INPUT_METHOD_SERVICE);
-        //
-        EditText editName = findViewById(R.id.editName);
-        imm.hideSoftInputFromWindow(editName.getWindowToken(), 0);
-        EditText editAddress = findViewById(R.id.editAddress);
-        imm.hideSoftInputFromWindow(editAddress.getWindowToken(),0);
-        EditText editCity = findViewById(R.id.editCity);
-        imm.hideSoftInputFromWindow(editCity.getWindowToken(),0);
-        EditText editState = findViewById(R.id.editState);
-        imm.hideSoftInputFromWindow(editState.getWindowToken(),0);
-        EditText editZipcode = findViewById(R.id.editZipcode);
-        imm.hideSoftInputFromWindow(editZipcode.getWindowToken(),0);
-        EditText editHome = findViewById(R.id.editHome);
-        imm.hideSoftInputFromWindow(editHome.getWindowToken(),0);
-        EditText editCell = findViewById(R.id.editCell);
-        imm.hideSoftInputFromWindow(editCell.getWindowToken(),0);
-        EditText editMail = findViewById(R.id.editEmail);
-        imm.hideSoftInputFromWindow(editMail.getWindowToken(),0);
-
+                        }
+                    }
+                    else {
+                        takePhoto();
+                    }
+                } else {
+                    takePhoto();
+                }
+            }
+        });
     }
-*/
+
+
+
     private void initContact(int id) {
 
         ContactDataSource ds = new ContactDataSource(MainActivity.this);
@@ -481,7 +493,14 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
                             "from this app", Toast.LENGTH_LONG).show();
                 }
             }
-
+            case PERMISSION_REQUEST_CAMERA: {
+                if (grantResults.length> 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    takePhoto();
+                } else {
+                    Toast.makeText(MainActivity.this,"You will not be able to save" +
+                            "contact pictures from this app", Toast.LENGTH_LONG).show();
+                }
+            }
         }
     }
 
@@ -494,6 +513,23 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         }
         else {
             startActivity(intent);
+        }
+    }
+    public void takePhoto() {
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(cameraIntent, CAMERA_REQUEST);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CAMERA_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Bitmap photo = (Bitmap) data.getExtras().get("data");
+                Bitmap scaledPhoto = Bitmap.createScaledBitmap(photo, 144, 144, true);
+                ImageButton imageContact = (ImageButton) findViewById(R.id.imageContact);
+                imageContact.setImageBitmap(scaledPhoto);
+                currentContact.setPicture(scaledPhoto);
+            }
         }
     }
 

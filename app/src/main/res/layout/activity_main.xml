@@ -10,8 +10,8 @@
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
         android:background="@color/purple_200"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -27,7 +27,9 @@
             android:contentDescription="@string/button_to_display_list_of_contacts"
             android:cropToPadding="false"
             app:srcCompat="@drawable/contact"
-            tools:ignore="ImageContrastCheck,RedundantDescriptionCheck" />
+            tools:ignore="ImageContrastCheck,RedundantDescriptionCheck"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"/>
 
         <ImageButton
             android:id="@+id/imageButtonMap"
@@ -37,7 +39,9 @@
             android:backgroundTint="@color/white"
             android:contentDescription="@string/button_to_display_contacts_on_map"
             app:srcCompat="@drawable/map"
-            tools:ignore="RedundantDescriptionCheck,ImageContrastCheck" />
+            tools:ignore="RedundantDescriptionCheck,ImageContrastCheck"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"/>
 
         <ImageButton
             android:id="@+id/imageButtonSettings"
@@ -47,7 +51,9 @@
             android:backgroundTint="@color/white"
             android:contentDescription="@string/todo"
             app:srcCompat="@drawable/settings"
-            tools:ignore="ImageContrastCheck" />
+            tools:ignore="ImageContrastCheck"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"/>
     </LinearLayout>
 
     <LinearLayout
@@ -126,7 +132,8 @@
         android:imeOptions="actionNext"
         android:inputType="textPersonName"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textContact">
+        app:layout_constraintTop_toBottomOf="@+id/textContact"
+        app:layout_constraintEnd_toStartOf="@+id/imageContact">
 
         <requestFocus /> <!-- tag -> put cursor in widget when layout is displayed- one per layout -->
     </EditText>
@@ -319,6 +326,21 @@
         android:text="Change"
         app:layout_constraintBaseline_toBaselineOf="@id/textBirthday"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageButton
+        android:id="@+id/imageContact"
+        android:layout_width="82dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="4dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textContact"
+        app:srcCompat="@drawable/cphoto" />
+
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
